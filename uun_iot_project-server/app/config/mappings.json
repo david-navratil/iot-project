@@ -1,0 +1,106 @@
+{
+  "{vendor}-{uuApp}-{uuSubApp}": {
+    "useCaseMap": {
+      "sys/uuAppWorkspace/init": {
+        "realization": "api/controllers/IotProjectController.init",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "sys/uuAppWorkspace/load": {
+        "realization": "api/controllers/IotProjectController.load",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "sys/uuAppWorkspace/loadBasicData": {
+        "realization": "api/controllers/IotProjectController.loadBasicData",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "defaultUve": {
+        "realization": "index.html",
+        "httpMethod": "GET",
+        "type": "UVE"
+      },
+      "sys/uuAppWorkspace/initUve": {
+        "realization": "index.html",
+        "httpMethod": "GET",
+        "type": "UVE"
+      },
+      "AlertHistory": {
+        "realization": "api/controllers/AlertController.alertHistory",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "AlertList": {
+        "realization": "api/controllers/AlertController.alertList",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "AlertChecked": {
+        "realization": "api/controllers/AlertController.alertChecked",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "AlertDelete": {
+        "realization": "api/controllers/AlertController.alertDelete",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "AlertCreate": {
+        "realization": "api/controllers/AlertController.alertCreate",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "DataList": {
+        "realization": "api/controllers/DataController.dataList",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "DataCreate": {
+        "realization": "api/controllers/DataController.dataCreate",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "SensorList": {
+        "realization": "api/controllers/SensorController.sensorList",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "SensorUpdate": {
+        "realization": "api/controllers/SensorController.sensorUpdate",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "SensorDelete": {
+        "realization": "api/controllers/SensorController.sensorDelete",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "SensorCreate": {
+        "realization": "api/controllers/SensorController.sensorCreate",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "SectionCreate": {
+        "realization": "api/controllers/SectionController.sectionCreate",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "SectionUpdate": {
+        "realization": "api/controllers/SectionController.sectionUpdate",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "SectionDelete": {
+        "realization": "api/controllers/SectionController.sectionDelete",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "SectionList": {
+        "realization": "api/controllers/SectionController.sectionList",
+        "httpMethod": "GET",
+        "type": "CMD"
+      }
+    }
+  }
+}

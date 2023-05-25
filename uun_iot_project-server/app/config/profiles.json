@@ -1,0 +1,54 @@
+{
+  "{asid}": {
+    "profileList": ["AsidAuthorities","AsidExecutives","AsidLicenseOwner","Public"],
+    "useCaseMap": {}
+  },
+  "*": {
+    "profileList": ["Authorities","Executives","AwidLicenseOwner","Public","Authenticated","AwidInitiator"],
+    "useCaseMap": {
+      "sys/uuAppWorkspace/init": {
+        "sysStateList": ["created","assigned"],
+        "profileList": ["AwidLicenseOwner","AwidInitiator"]
+      },
+      "sys/uuAppWorkspace/load": {
+        "sysStateList": ["active"],
+        "profileList": ["Authenticated"]
+      },
+      "sys/uuAppWorkspace/loadBasicData": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "defaultUve": {
+        "profileList": ["Public"]
+      },
+      "sys/uuAppWorkspace/initUve": {
+        "sysStateList": ["created"],
+        "profileList": ["Public","AwidLicenseOwner"]
+      },
+      "SensorCreate": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "AlertList": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "SectionCreate": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "SectionUpdate": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "SectionDelete": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "SectionList": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      }
+    }
+  }
+}

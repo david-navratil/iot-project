@@ -1,0 +1,25 @@
+{
+  "uuSubAppDataStore": {
+    "primary": {
+      "type": "uuAppObjectStore",
+      "realization": "MongoDB",
+      "schemaMap": {
+        "iotProject": {
+          "realization": "dao/IotProjectMongo"
+        },
+        "alert": {
+          "realization": "dao/AlertMongo"
+        },
+        "data": {
+          "realization": "dao/DataMongo"
+        },
+        "sensor": {
+          "realization": "dao/SensorMongo"
+        },
+        "section": {
+          "realization": "dao/SectionMongo"
+        }
+      }
+    }
+  }
+}
