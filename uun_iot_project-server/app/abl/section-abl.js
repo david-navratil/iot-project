@@ -32,10 +32,10 @@ class SectionAbl {
     const validationResult = this.validator.validate("sectionCreateDtoInType", dtoIn);
     uuAppErrorMap = ValidationHelper.processValidationResult(
       dtoIn,
-      validationResult,
+    validationResult,
       WARNINGS.initUnsupportedKeys.code,
       Errors.SectionCreate.InvalidDtoIn
-    );
+  );
 
     let data = dtoIn
 

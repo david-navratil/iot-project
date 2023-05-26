@@ -36,8 +36,8 @@
         "httpMethod": "GET",
         "type": "CMD"
       },
-      "AlertChecked": {
-        "realization": "api/controllers/AlertController.alertChecked",
+      "AlertCheck": {
+        "realization": "api/controllers/AlertController.alertCheck",
         "httpMethod": "POST",
         "type": "CMD"
       },

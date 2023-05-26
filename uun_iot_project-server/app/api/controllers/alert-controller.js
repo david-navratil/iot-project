@@ -11,8 +11,8 @@ class AlertController {
     return AlertAbl.alertDelete(ucEnv.getUri().getAwid(), ucEnv.getDtoIn());
   }
 
-  alertChecked(ucEnv) {
-    return AlertAbl.alertChecked(ucEnv.getUri().getAwid(), ucEnv.getDtoIn());
+  alertCheck(ucEnv) {
+    return AlertAbl.alertCheck(ucEnv.getUri().getAwid(), ucEnv.getDtoIn());
   }
 
   alertList(ucEnv) {

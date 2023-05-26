@@ -33,6 +33,18 @@
         "sysStateList": ["active"],
         "profileList": ["Public"]
       },
+      "AlertCreate": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "AlertCheck": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "AlertDelete": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
       "SectionCreate": {
         "sysStateList": ["active"],
         "profileList": ["Public"]

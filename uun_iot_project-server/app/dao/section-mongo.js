@@ -7,7 +7,6 @@ class SectionMongo extends UuObjectDao {
   }
 
   async create(uuObject) {
-    console.log("test")
     return await super.insertOne(uuObject);
   }
 
