@@ -1,7 +1,7 @@
 "use strict";
 const Path = require("path");
 const { Validator } = require("uu_appg01_server").Validation;
-const { DaoFactory } = require("uu_appg01_server").ObjectStore;
+const { DaoFactory, ObjectStoreError } = require("uu_appg01_server").ObjectStore;
 const { ValidationHelper } = require("uu_appg01_server").AppServer;
 const Errors = require("../api/errors/sensor-error.js");
 
@@ -39,10 +39,10 @@ class SensorAbl {
 
     // Dao create
     data.awid = awid;
-    let section = await this.dao.create(data);
+    let sensor = await this.dao.create(data);
 
     const dtoOut = {
-      ...section,
+      ...sensor,
       uuAppErrorMap,
     };
 
@@ -94,7 +94,7 @@ class SensorAbl {
     try {
       sensor = await this.dao.get(awid, dtoIn.id);
       if (sensor === null) {
-        throw new Errors.SectionUpdate.InvalidId({ uuAppErrorMap });
+        throw new Errors.SensorUpdate.InvalidId({ uuAppErrorMap });
       }
     } catch (e) {
       if (e instanceof ObjectStoreError) {
