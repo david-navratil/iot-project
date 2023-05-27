@@ -17,8 +17,7 @@ const sensorUpdateDtoInType = shape({
 });
 
 const sensorCreateDtoInType = shape({
-   sensorid: id().isRequired(),
-   name: string(255),
+   name: string(255).isRequired(),
 //   relayid: id().isRequired(),
    isFlooded: boolean()
 });
