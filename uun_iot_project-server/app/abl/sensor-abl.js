@@ -61,7 +61,7 @@ class SensorAbl {
     );
 
     try {
-      let subject = await this.dao.get(awid, dtoIn.id);
+      let subject = await this.dao.get(awid, dtoIn.sensorid);
 
       if (subject === null) {
         throw new Errors.SensorDelete.InvalidId({ uuAppErrorMap });
