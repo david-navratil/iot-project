@@ -19,6 +19,7 @@ const Css = {
     Config.Css.css({
       maxWidth: 512,
       margin: "auto",
+      padding: "5%",
     }),
   formControls: () =>
     Config.Css.css({

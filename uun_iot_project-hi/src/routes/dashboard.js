@@ -25,7 +25,7 @@ import {
 import UU5 from "uu5g04";
 import "uu5g04-bricks";
 import "uu5g04-forms";
-import Uu5Elements, { Button, Modal, Box, Line, Text, DateTime, Grid } from "uu5g05-elements";
+import Uu5Elements, { Button, Modal, Box, Line, Text, DateTime, Grid, Block } from "uu5g05-elements";
 import { useSubApp, useSystemData } from "uu_plus4u5g02";
 import Plus4U5App, { withRoute } from "uu_plus4u5g02-app";
 import Config from "./config/config.js";
@@ -35,9 +35,10 @@ import importLsi from "../lsi/import-lsi.js";
 import { format } from "date-fns";
 import Section from "../bricks/section.js";
 import { PieChart, Pie, Tooltip, Legend, Cell, ResponsiveContainer } from 'recharts';
-import { getSections } from '../services/api';
+import { getSections, getSensors, getAlerts, createSection, deleteSection, updateSection } from '../services/api';
 import Uu5Forms from "uu5g05-forms";
 import SectionAddModal from "../bricks/sectionAddModal.js";
+import SectionEditModal from "../bricks/sectionEditModal.js";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -56,11 +57,6 @@ const saveSection = (section) => {
   // Implement the logic to save the section data to the backend or state management.
 };
 
-const deleteSensor = (sectionId, sensorId) => {
-  // Delete the specified sensor
-  console.log("Deleting sensor:", sensorId, "from section:", sectionId);
-  // Implement the logic to delete the sensor from the backend or state management.
-};
 
 const updateSensor = (sectionId, sensorId, updatedSensorData) => {
   // Update the specified sensor with new data
@@ -68,11 +64,6 @@ const updateSensor = (sectionId, sensorId, updatedSensorData) => {
   // Implement the logic to update the sensor data in the backend or state management.
 };
 
-const createSensor = (sectionId, newSensorData) => {
-  // Create a new sensor in the specified section
-  console.log("Creating sensor in section:", sectionId, "with data:", newSensorData);
-  // Implement the logic to create a new sensor in the backend or state management.
-};
 //@@viewOff:helpers
 
 let Dashboard = createVisualComponent({
@@ -89,40 +80,102 @@ let Dashboard = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const sensorsJson = require("../assets/sensors.json");
 
     const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalUpdateSectionOpen, setModalUpdateSectionOpen] = useState(false);
+    const [sectionUpdateId, setSectionUpdateId] = useState("");
+    const [alertModalOpen, setAlertModalOpen] = useState(false);
+    const [selectedAlert, setSelectedAlert] = useState(null);
     const [selectedSensor, setSelectedSensor] = useState(null);
-
-    let totalSections = 0;
-    let totalSensors = 0;
-    let totalFlooded = 0;
-
-    sensorsJson.forEach((section) => {
-      totalSections++;
-      totalSensors += section.sensors.length;
-      section.sensors.forEach((sensor) => {
-        if (sensor.isFlooded) {
-          totalFlooded++;
-        }
-      });
-    });
-
+    const [sections, setSections] = useState([]);
+    const [sensors, setSensors] = useState([]);
+    const [unassignedSensors, setUnassignedSensors] = useState([]);
+    const [totalSections, setTotalSections] = useState(0);
+    const [totalSensors, setTotalSensors] = useState(0);
+    const [totalFlooded, setTotalFlooded] = useState(0);
+    const [alerts, setAlerts] = useState([]);
+    const FETCH_INTERVAL = 90000;
     const nonFlooded = totalSensors - totalFlooded;
     const COLORS = ['red', 'green'];
     const pieData = [
       { name: 'Flooded', value: totalFlooded },
       { name: 'Not Flooded', value: nonFlooded },
     ];
+    const [update, setUpdate] = useState(false);
+
+    const handleUpdateSection = async (sectionId) => {
+      // Assume that newSensors is an array of sensor objects that should replace
+      // the current sensors in the section with name = sectionName
+      setSectionUpdateId(sectionId);
+      setModalUpdateSectionOpen(true);
+      // Find the section that needs to be updated
+      const sectionToUpdate = sections.find(section => section.name === sectionName);
+      if (!sectionToUpdate) {
+        console.error(`Section with name ${sectionName} not found.`);
+        return;
+      }
+
+      // Replace the sensors in this section
+      sectionToUpdate.sensors = newSensors;
+
+      // Update the sections state with the new data
+      setSections([...sections]);
+    };
+    const handleUpdatedSection = async (sectionId) => {
+
+      const sectionToUpdate = sections.find(section => section.name === sectionName);
+      if (!sectionToUpdate) {
+        console.error(`Section with name ${sectionName} not found.`);
+        return;
+      }
+
+      // Replace the sensors in this section
+      sectionToUpdate.sensors = newSensors;
+
+      // Update the sections state with the new data
+      setSections([...sections]);
+    };
 
     const handleUpdateSensor = (sectionId, sensorId, sensorData) => {
       setUpdateModalOpen(true);
       setSelectedSensor({ sectionId, sensorId, sensorData });
     };
-    const handleCreateSection = () => {
-      setUpdateModalOpen(true);
-      setSelectedSensor({ sectionName });
+    const handleCreateSection = (newSectionName, newSectionSensorIds) => {
+      // Assumes newSectionSensors is an array of sensor objects to add to the new section
+      const newSectionSensors = sensors.filter(sensor => newSectionSensorIds.includes(sensor.id));
+      // Ensure the new sensors are not in any other section
+      const updatedSections = sections.map(section => {
+        section.sensors = section.sensors.filter(sensor => !newSectionSensorIds.some(newSensor => newSensor === sensor.id));
+        if (section.name != "Unassigned") {section.sensorIds = section.sensorIds.filter(sensor => !newSectionSensorIds.some(newSensor => newSensor === sensor));}
+        if (section.name != "Unassigned") {updateSection(section.id, section.name, section.sensorIds);}
+        return section;
+      });
+
+      // Add the new section to the sections list
+      const newSection = {
+        id: Utils.String.generateId(),
+        name: newSectionName,
+        sensors: newSectionSensors,
+        sensorIds: newSectionSensorIds,
+      };
+
+      updatedSections.push(newSection);
+
+      // Update the sections state
+      setSections(updatedSections);
+
+      setUpdateModalOpen(false);
+    };
+    const handleDeleteSection = async (sectionId) => {
+      await deleteSection(sectionId);
+      const updatedSections = sections.filter(section => section.id !== sectionId);
+      setSections(updatedSections);
+    };
+    const handleOpenAlertModal = (alert) => {
+      setSelectedAlert(alert);
+      setAlertModalOpen(true);
     };
 
 
@@ -130,16 +183,55 @@ let Dashboard = createVisualComponent({
       updateSensor(selectedSensor.sectionId, selectedSensor.sensorId, updatedSensorData);
       setUpdateModalOpen(false);
     };
-
     useEffect(() => {
-      // Fetch sections when the component mounts
-      getSections().then(data => {
-        console.log(data);
-      }).catch(error => {
-        console.error("Error:", error);
-      });
+      const fetchData = async () => {
+        try {
+          const [sectionData, sensorsData, alertsData] = await Promise.all([getSections(), getSensors(), getAlerts()]);
+
+          // Mapping sensors and alerts
+
+
+          const updatedSensors = sensorsData.itemList.map(sensor => {
+            const sensorAlerts = alertsData.itemList.filter(alert => alert.sensorId === sensor.id);
+
+            const isFlooded = sensorAlerts.some(alert => alert.status === true);
+            return { ...sensor, isFlooded, alerts: sensorAlerts };
+          });
+
+          const updatedSections = sectionData.itemList.map(section => {
+            const sectionSensors = updatedSensors.filter(sensor => section.sensorIds.includes(sensor.id));
+            return { ...section, sensors: sectionSensors };
+          });
+          const unassignedSensors = updatedSensors.filter(sensor => !updatedSections.flatMap(section => section.sensorIds).includes(sensor.id));
+          const unassignedSection = {
+            id: Utils.String.generateId(),
+            name: "Unassigned",
+            sensors: unassignedSensors,
+          };
+          updatedSections.push(unassignedSection);
+          setSections(updatedSections);
+          setSensors(updatedSensors);
+          setAlerts(alertsData.itemList);
+
+          setUnassignedSensors(unassignedSensors);
+          console.log(updatedSections);
+          // Update totals
+          setTotalSections(updatedSections.length);
+          setTotalSensors(updatedSensors.length);
+          setTotalFlooded(updatedSensors.filter(sensor => sensor.isFlooded).length);
+
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+
+      // Call the async function
+      fetchData();
+      const intervalId = setInterval(fetchData, FETCH_INTERVAL);
+      return () => clearInterval(intervalId);
     }, []);
-    const [modalOpen, setModalOpen] = useState(false);
+
+
     //@@viewOff:private
 
     //@@viewOn:interface
@@ -150,101 +242,120 @@ let Dashboard = createVisualComponent({
     return (
       <div>
         <RouteBar />
-
-        <Grid container spacing={2} templateColumns={{ xs: "100%", m: "50% 50%" }}>
-          <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <ResponsiveContainer width="99%" height={400}>
-              <PieChart>
-                <Pie
-                  dataKey="value"
-                  isAnimationActive={false}
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius="80%"
-                  fill="#8884d8"
-                  label
-                >
-                  {
-                    pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))
-                  }
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </Grid.Item>
-          <Grid.Item style={{justifyContent: 'center', alignItems: 'center' }}>
-            <Grid container templateColumns={{ xs: "50% 50%" }}>
-              <Grid.Item>
-                <Card>
-                  <CardContent>
-                    <Typography variant="body2" component="div">
-                      Total Sections:
-                    </Typography>
-                    <Typography variant="h5" color="text.secondary">
-                      {totalSections}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid.Item>
-              <Grid.Item>
-                <Card>
-                  <CardContent>
-                    <Typography variant="body2" component="div">
-                      Total Sensors:
-                    </Typography>
-                    <Typography variant="h5" color="text.secondary">
-                      {totalSensors}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid.Item>
-              <Grid.Item>
-                <Card>
-                  <CardContent>
-                    <Typography variant="body2" component="div">
-                      Total Flooded Sensors:
-                    </Typography>
-                    <Typography variant="h5" color="text.secondary">
-                      {totalFlooded}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid.Item>
-              <Grid.Item>
-                <Card>
-                  <CardContent>
-                    <Typography variant="body2" component="div">
-                      Total Not Flooded Sensors:
-                    </Typography>
-                    <Typography variant="h5" color="text.secondary">
-                      {totalSensors - totalFlooded}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid.Item> 
+        <h1></h1>
+        <div style={{ paddingLeft: "2%", paddingRight: "2%" }}>
+          <Grid container spacing={2} templateColumns={{ xs: "100%", m: "50% 50%" }}>
+            <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <ResponsiveContainer width="99%" height={400}>
+                <PieChart>
+                  <Pie
+                    dataKey="value"
+                    isAnimationActive={false}
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius="80%"
+                    fill="#8884d8"
+                    label
+                  >
+                    {
+                      pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))
+                    }
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Grid.Item>
+            <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Grid container templateColumns={{ xs: "50% 50%" }}>
+                <Grid.Item>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="body2" component="div">
+                        Total Sections:
+                      </Typography>
+                      <Typography variant="h5" color="text.secondary">
+                        {totalSections}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid.Item>
+                <Grid.Item>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="body2" component="div">
+                        Total Sensors:
+                      </Typography>
+                      <Typography variant="h5" color="text.secondary">
+                        {totalSensors}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid.Item>
+                <Grid.Item>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="body2" component="div">
+                        Total Flooded Sensors:
+                      </Typography>
+                      <Typography variant="h5" color="text.secondary">
+                        {totalFlooded}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid.Item>
+                <Grid.Item>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="body2" component="div">
+                        Total Not Flooded Sensors:
+                      </Typography>
+                      <Typography variant="h5" color="text.secondary">
+                        {nonFlooded}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid.Item>
               </Grid>
-          </Grid.Item>
+            </Grid.Item>
 
 
-        </Grid>
+          </Grid>
+          <Block
+            header={"Sections"}
+            card="full"
+            headerType="heading"
+            level={2}
+            //borderRadius="expressive"
+            //colorScheme="positive"
 
-        <Grid container spacing={2}>
-          {sensorsJson.map((section) => (
-            <Section
-              key={section.id}
-              section={section}
-              handleUpdateSensor={handleUpdateSensor}
-            />
-          ))}
-          <Button onClick={() => setModalOpen(true)}>
-            Add Section
-          </Button>
-          <SectionAddModal open={modalOpen} onClose={() => setModalOpen(false)} />
-        </Grid>
+            //significance="distinct"
+            actionList={[
+              {
+                icon: "mdi-plus",
+                onClick: () => setModalOpen(true),
+                borderRadius: "full",
+              }
+            ]}
+          >
+            <SectionAddModal currentSensors={[{ value: "" }]} sections={sections} open={modalOpen} onClose={() => setModalOpen(false)} onUpdate={handleCreateSection} />
+            <SectionEditModal open={modalUpdateSectionOpen} sectionId={sectionUpdateId} sections={sections} onClose={() => setModalUpdateSectionOpen(false)} onUpdate={handleUpdatedSection}/>
+            <Grid container spacing={2} templateColumns={{ xs: "repeat(auto-fit, minmax(45%, 49%))" }}>
+              {sections.map((section) => (
+                <Section
+                  key={section.id}
+                  section={section}
+                  handleUpdateSensor={handleUpdateSensor}
+                  handleDeleteSection={handleDeleteSection}
+                  handleUpdateSection={handleUpdateSection}
+                />
+              ))}
+            </Grid>
+          </Block>
+        </div>
       </div>
     );
   },
@@ -252,7 +363,6 @@ let Dashboard = createVisualComponent({
 });
 
 Dashboard = withRoute(Dashboard);
-//<FilterModal carDataObject = {carsJson}/>
 //@@viewOn:exports
 export { Dashboard };
 export default Dashboard;

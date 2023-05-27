@@ -7,6 +7,7 @@ import Sensor from './sensor';
 import EditIcon from "@mui/icons-material/Edit";
 import { IconButton } from "@mui/material";
 import styled from "styled-components";
+import ConfirmationModal from "./confirmationModal.js";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -30,7 +31,9 @@ const Section = createVisualComponent({
   //@@viewOn:propTypes
   propTypes: {
     section: PropTypes.object.isRequired,
-    handleUpdateSensor: PropTypes.func.isRequired
+    handleUpdateSensor: PropTypes.func.isRequired,
+    handleDeleteSection: PropTypes.func.isRequired,
+    handleUpdateSection: PropTypes.func.isRequired
   },
   //@@viewOff:propTypes
 
@@ -41,6 +44,8 @@ const Section = createVisualComponent({
   render(props) {
     //@@viewOn:private
     const { children, section, handleUpdateSensor } = props;
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalEditOpen, setModalEditOpen] = useState(false);
     const TextWithIcon = styled.div`
       display: flex;
       align-items: center;
@@ -61,19 +66,6 @@ const Section = createVisualComponent({
 
     //@@viewOn:render
     const attrs = Utils.VisualComponent.getAttrs(props, Css.main());
-    const [count, setCount] = useState(0);
-    let increase = () => {
-
-      if (props.isOpen) {
-        if (count < props.limit) {
-          setCount((current) => current + 1)
-          props.setSum((current) => current + 1)
-        }
-      }
-      else {
-        setCount(0)
-      }
-    }
     return (
         <Block 
           header={section.name} 
@@ -81,22 +73,22 @@ const Section = createVisualComponent({
           headerType="heading"
           level={2}
           borderRadius="expressive"
+          colorScheme="positive"
+          significance="distinct"
           actionList={[
             {
               icon: "mdi-pencil",
-              onClick: () => handleUpdateSensor(sectionId, sensor.id, { ...sensor, isFlooded: true }),
+              onClick: () => handleUpdateSection(section.id),
+              borderRadius: "full",
+            },
+            {
+              icon: "mdi-delete",
+              onClick: () => setModalOpen(true),
               borderRadius: "full",
             }
           ]}
           >
-          <TextWithIcon>
-            <h1>{section.name}</h1>
-            <IconButtonWrapper>
-              <IconButton onClick={() => handleUpdateSensor(sectionId, sensor.id, { ...sensor, isFlooded: true })}>
-                <EditIcon />
-              </IconButton>
-            </IconButtonWrapper>
-          </TextWithIcon>
+          <ConfirmationModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={() => props.handleDeleteSection(section.id)} />
           <Grid justifyItems="start" templateColumns={{xs: "repeat(auto-fit, minmax(200px, 1fr))"}}>
             {section.sensors.map((sensor) => (
               <Sensor

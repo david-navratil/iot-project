@@ -27,33 +27,17 @@ const ROUTE_MAP = {
     </Uu5Elements.Text>
   ),
 };
-const themes = {
-  light: {
-    backgroundColor: "#f1f1f1",
-    color: "black",
-  },
-  dark: {
-    backgroundColor: "#121212",
-    color: "white",
-  },
-};
 
-const getThemeCss = (theme) => {
-  const colors = themes[theme];
-
-  return Config.Css.css({
-    display: "flex",
-    alignItems: "stretch",
-    backgroundColor: colors.backgroundColor,
-    color: colors.color,
-    height: "80px",
-    padding: 10,
-    margin: "10px 20px 20px 10px",
-  });
-};
 //@@viewOff:constants
 
 //@@viewOn:css
+const Css = {
+  main: () =>
+    Config.Css.css({
+      marginLeft: "5%",
+      marginRight: "5%",
+    })
+};
 //@@viewOff:css
 
 //@@viewOn:helpers
@@ -81,11 +65,13 @@ const Spa = createVisualComponent({
 
     //@@viewOn:render
     return (
+      
       <Plus4U5.SpaProvider initialLanguageList={["en", "cs"]}>
-        <Uu5Elements.ModalBus>
+        <Uu5Elements.ModalBus >
           <Plus4U5App.Spa routeMap={ROUTE_MAP} />
         </Uu5Elements.ModalBus>
       </Plus4U5.SpaProvider>
+      
     );
     //@@viewOff:render
   },
