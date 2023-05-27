@@ -68,7 +68,7 @@ class DataAbl {
     if((!alertChanged)&&!(alertExists))
     {
       let alertNew = {
-        "sensorId": dtoIn.sensorId,
+        "sensorId": sensor.id.toString(),
         "check": false,
         "checkTime": date,
         "status": dtoIn.status,
@@ -81,7 +81,7 @@ class DataAbl {
     if(!(alertChanged)&&(alertExists))
     {
       let alertNew = {
-        "sensorId": dtoIn.sensorId,
+        "sensorId": sensor.id.toString(),
         "check": "false",
         "checkTime": date,
         "status": dtoIn.status,
