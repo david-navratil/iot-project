@@ -5,7 +5,8 @@ import Plus4U5 from "uu_plus4u5g02";
 import Plus4U5App from "uu_plus4u5g02-app";
 
 import Config from "./config/config.js";
-import Home from "../routes/home.js";
+import Dashboard from "../routes/dashboard.js";
+import History from "../routes/history.js";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -14,9 +15,10 @@ const InitAppWorkspace = Utils.Component.lazy(() => import("../routes/init-app-w
 const ControlPanel = Utils.Component.lazy(() => import("../routes/control-panel.js"));
 
 const ROUTE_MAP = {
-  "": { redirect: "home" },
-  home: (props) => <Home {...props} />,
+  "": { redirect: "dashboard" },
   about: (props) => <About {...props} />,
+  dashboard: (props) => <Dashboard {...props} />,
+  history: (props) => <History {...props} />,
   "sys/uuAppWorkspace/initUve": (props) => <InitAppWorkspace {...props} />,
   controlPanel: (props) => <ControlPanel {...props} />,
   "*": () => (
@@ -24,6 +26,30 @@ const ROUTE_MAP = {
       Not Found
     </Uu5Elements.Text>
   ),
+};
+const themes = {
+  light: {
+    backgroundColor: "#f1f1f1",
+    color: "black",
+  },
+  dark: {
+    backgroundColor: "#121212",
+    color: "white",
+  },
+};
+
+const getThemeCss = (theme) => {
+  const colors = themes[theme];
+
+  return Config.Css.css({
+    display: "flex",
+    alignItems: "stretch",
+    backgroundColor: colors.backgroundColor,
+    color: colors.color,
+    height: "80px",
+    padding: 10,
+    margin: "10px 20px 20px 10px",
+  });
 };
 //@@viewOff:constants
 
@@ -47,7 +73,7 @@ const Spa = createVisualComponent({
   //@@viewOff:defaultProps
 
   render() {
-    //@@viewOn:private
+    //@@viewOn:private  
     //@@viewOff:private
 
     //@@viewOn:interface
