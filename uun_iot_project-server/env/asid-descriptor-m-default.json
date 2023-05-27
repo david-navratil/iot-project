@@ -17,7 +17,7 @@
           "min": 1,
           "max": 1
         },
-        "appPackUri": null,
+        "appPackUri": "ues:UCL-BT:UUN.BIOT23SPT03.MAING01/APPBOX-0.1.0:UUN.BIOT23SPT03.MAING01/CMD-PACK",
         "runtimeStack": "UU.APPG01/APPSERVER_NODEJS_STACK-2.1"
       }
     },

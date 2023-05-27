@@ -8,8 +8,10 @@
   },
   "devkit": {
     "development": {
-      "appBoxLocationUri": "----- VALUE REQUIRED -----",
-      "appDeploymentUri": null
+      "appBoxLocationUri": "ues:UCL-BT:OPR.RSP/APPBOXES",
+      "appDeploymentUri": null,
+      "uuCloudBaseUri": "https://sys-eu-c-3.plus4u.net",
+      "uuCloudLogStoreBaseUri": "https://cmd-eu-c-3.plus4u.net/DTC-BT/uu-logstore/Log/getRecordList/exec"
     }
   },
   "uun_iot_project-hi": {},

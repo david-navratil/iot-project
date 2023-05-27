@@ -2,14 +2,14 @@
   "schemaVersion": "1.0.0",
   "schemaSpecificationUri": "https://uuapp.plus4u.net/uu-bookkit-maing01/bef682626ed943f28cde360ccb325981/book/page?code=uuSubAppInstanceDescriptor",
   "uuSubApp": {
-    "code": "UUN.IOT.PROJECT",
+    "code": "UUN.BIOT23SPT03.MAING01",
     "version": "0.1.0",
-    "name": "uunIotProject",
+    "name": "uunBIOT23SPT03.Maing01",
     "description": "",
     "license": "License Commercial",
     "asidRequired": true,
     "awidCount": 1,
-    "resourcePoolUri": "----- VALUE REQUIRED -----",
+    "resourcePoolUri": "ues:UCL-BT:UUN_STUDENTS03_AWE",
     "uuAppNodeSetMap": {
       "CMD": {
         "nodeSize": "G1_S",
@@ -17,7 +17,7 @@
           "min": 1,
           "max": 1
         },
-        "appPackUri": null,
+        "appPackUri": "ues:UCL-BT:UUN.BIOT23SPT03.MAING01/APPBOX-0.1.0:UUN.BIOT23SPT03.MAING01/CMD-PACK",
         "runtimeStack": "UU.APPG01/APPSERVER_NODEJS_STACK-2.1"
       }
     },
@@ -31,7 +31,21 @@
     },
     "uuConfigMap": {
       "uu_app_oidc_providers_oidcg02_uri": "https://uuapp-dev.plus4u.net/uu-oidc-maing02/eca71064ecce44b0a25ce940eb8f053d/oidc",
-      "asid_license_owner_list": ["0-0"]
+      "asid_license_owner_list": [
+        "579-1180-4917-1"
+      ],
+      "uu_app_oidc_providers_oidcg02_client_executive": "579-1180-4917-1"
+    }
+  },
+  "uuSubAppInstance": {
+    "asid": "218da2a1c7498dd9d59e834fedf91aca",
+    "asidOwner": "579-1180-4917-1",
+    "awid": "5ff82ddf2d7c5fced500e905871c7221",
+    "awidOwner": "579-8255-4100-1",
+    "uuAppObjectStoreMap": {
+      "OSID_1": {
+        "osid:": "gg1aov64z3c4ukls6ryjryqebylbxq1fs"
+      }
     }
   }
 }
