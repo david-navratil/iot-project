@@ -37,7 +37,7 @@ const SensorUpdate = {
       this.message = "Dto In is not valid.";
     }
   },
-  SectionDaoUpdateFailed: class extends IotProjectUseCaseError {
+  SensorDaoUpdateFailed: class extends IotProjectUseCaseError {
     constructor() {
       super(...arguments);
       this.code = `${SensorUpdate.UC_CODE}daoFailed`;

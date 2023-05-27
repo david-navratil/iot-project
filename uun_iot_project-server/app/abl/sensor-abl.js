@@ -92,7 +92,7 @@ class SensorAbl {
 
     let sensor;
     try {
-      sensor = await this.dao.get(awid, dtoIn.id);
+      sensor = await this.dao.get(awid, dtoIn.sensorid);
       if (sensor === null) {
         throw new Errors.SensorUpdate.InvalidId({ uuAppErrorMap });
       }
