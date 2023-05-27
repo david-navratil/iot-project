@@ -5,6 +5,8 @@ const { DaoFactory, ObjectStoreError } = require("uu_appg01_server").ObjectStore
 const { ValidationHelper } = require("uu_appg01_server").AppServer;
 const Errors = require("../api/errors/sensor-error.js");
 
+const cron = require("node-cron");
+
 const WARNINGS = {
   initUnsupportedKeys: {
     code: `${Errors.SensorCreate.UC_CODE}unsupportedKeys`,
@@ -23,6 +25,28 @@ class SensorAbl {
   constructor() {
     this.validator = Validator.load();
     this.dao = DaoFactory.getDao("sensor");
+
+    cron.schedule("*/120 * * * * *", async function () {
+      let sensorDao = DaoFactory.getDao("sensor");
+      let sensors = await sensorDao.listAll()
+
+      let nonAliveSensors = sensors.itemList.filter(sensor => {
+        const lastAliveDate = new Date(sensor.lastAlive)
+        const diff = Date.now() - lastAliveDate
+        const diffMinutes = Math.round(((diff % 86400000) % 3600000) / 60000)
+        return diffMinutes > 2
+      })
+
+      for (const sensor of nonAliveSensors) {
+        let updatedSensor = sensor
+        updatedSensor.alive = false
+        try {
+          await sensorDao.update(updatedSensor)
+        } catch (e) {
+          console.log(e)
+        }
+      }
+    })
   }
 
   async sensorCreate(awid, dtoIn) {
@@ -30,12 +54,14 @@ class SensorAbl {
     const validationResult = this.validator.validate("sensorCreateDtoInType", dtoIn);
     uuAppErrorMap = ValidationHelper.processValidationResult(
       dtoIn,
-    validationResult,
+      validationResult,
       WARNINGS.initUnsupportedKeys.code,
       Errors.SensorCreate.InvalidDtoIn
   );
 
     let data = dtoIn
+    data.alive = true
+    data.lastAlive = (new Date().toISOString());
 
     // Dao create
     data.awid = awid;

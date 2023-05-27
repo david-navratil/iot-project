@@ -22,12 +22,13 @@ const alertCreateDtoInType = shape({
   checkTime: Date(),
   status: boolean(),
   switchTime: Date(),
+  awid: uu5String(512),
 });
 
 const alertListDtoInType = shape({
   timeFrom: uu5String(512),
   timeTo: uu5String(512),
-  sensorid: id(),
+  sensorId: id(),
   pageInfo: shape({
     pageIndex: integer(),
     pageSize: integer(),

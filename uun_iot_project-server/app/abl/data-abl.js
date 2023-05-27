@@ -30,10 +30,16 @@ class DataAbl {
       let tmp = {
         "awid": awid,
         "nodeId": dtoIn.nodeId,
-        "name": ""
+        "name": dtoIn.nodeId,
+        "alive": true,
+        "lastAlive": date
       }
       sensor = await this.daoSensor.create(tmp);
-    }    
+    } else {
+      sensor.lastAlive = date
+      sensor.alive = true
+      this.daoSensor.update(sensor)
+    }
 
     try {
       alertOld = await this.daoAlert.getBySensorId(awid, sensor.id.toString());
