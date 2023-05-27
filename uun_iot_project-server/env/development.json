@@ -3,7 +3,7 @@
   "uuSubAppDataStoreMap": {
     "primary": "mongodb://127.0.0.1:27017/iotProjectPrimary"
   },
-  "asid_license_owner_list": ["4128-6405-1", "4624-469-1"],
+  "asid_license_owner_list": ["4128-6405-1", "4624-469-1","9691-1825-1"],
   "asid": "11111111111111111111111111111111",
   "log_level": "INFO",
   "uu_app_oidc_proviers_oidcg02_uri": "https://uuidentity.plus4u.net/uu-oidc-maing02/bb977a99f4cc4c37a2afce3fd599d0a7/oidc"
