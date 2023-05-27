@@ -7,6 +7,7 @@ const alertuuSchema = {
   check: false, // Checks if the situation was check personally
   checkTime: 2023-01-02T00:00:00Z, // Time when the user checks alert
   status: false, // checks if alert is currently active
+  switchTime: Date
   awid: "012...", //app instance id - unique code specified externally
   sys: {
     cts: "...", //creation timestamp

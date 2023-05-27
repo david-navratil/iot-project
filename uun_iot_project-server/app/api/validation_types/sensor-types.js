@@ -12,13 +12,13 @@ const sensorDeleteDtoInType = shape({
 const sensorUpdateDtoInType = shape({
    sensorid: id().isRequired(),
    name: string(255),
-   relayid: id().isRequired(),
+//   relayid: id().isRequired(),
    isFlooded: boolean()
 });
 
 const sensorCreateDtoInType = shape({
    sensorid: id().isRequired(),
    name: string(255),
-   relayid: id().isRequired(),
+//   relayid: id().isRequired(),
    isFlooded: boolean()
 });

@@ -29,6 +29,22 @@
         "sysStateList": ["active"],
         "profileList": ["Public"]
       },
+      "SensorUpdate": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "SensorDelete": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "SensorList": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "SensorGet": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
       "AlertList": {
         "sysStateList": ["active"],
         "profileList": ["Public"]
@@ -58,6 +74,10 @@
         "profileList": ["Public"]
       },
       "SectionList": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "DataCreate": {
         "sysStateList": ["active"],
         "profileList": ["Public"]
       }
