@@ -7,7 +7,7 @@ const Errors = require("../api/errors/sensor-error.js");
 
 const WARNINGS = {
   initUnsupportedKeys: {
-    code: `${Errors.SectionCreate.UC_CODE}unsupportedKeys`,
+    code: `${Errors.SensorCreate.UC_CODE}unsupportedKeys`,
   },
 };
 

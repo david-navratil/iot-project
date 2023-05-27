@@ -4,7 +4,6 @@ const { Validator } = require("uu_appg01_server").Validation;
 const { DaoFactory } = require("uu_appg01_server").ObjectStore;
 const { ValidationHelper } = require("uu_appg01_server").AppServer;
 const Errors = require("../api/errors/data-error.js");
-
 const WARNINGS = {
 
 };
@@ -17,7 +16,7 @@ class DataAbl {
   }
 
   async dataCreate(awid, dtoIn) {
-    
+
   }
 
   async dataList(awid, dtoIn) {
