@@ -39,9 +39,9 @@ class AlertAbl {
     );
 
     let data = dtoIn
-    if (!dtoIn.status) data.status = true
-    data.checked = false
-    data.checkTime = "0000-00-00T00:00:00Z"
+    // if (!dtoIn.status) data.status = true
+    // data.checked = false
+    // data.checkTime = "0000-00-00T00:00:00Z"
 
     // Validate sensorId
     /*

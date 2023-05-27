@@ -1,8 +1,8 @@
 const sensorListDtoInType = shape ({
-    pageInfo: {
+   pageInfo: shape({
       pageIndex: integer(),
-      pageSize: integer()
-    }
+      pageSize: integer(),
+    }),
 });
 
 const sensorDeleteDtoInType = shape({

@@ -128,9 +128,9 @@ class SensorAbl {
       dtoIn,
       validationResult,
       WARNINGS.initUnsupportedKeys.code,
-      Errors.SensorCreate.InvalidDtoIn
+      Errors.SensorList.InvalidDtoIn
     );
-
+    
     if (!dtoIn.sortBy) dtoIn.sortBy = DEFAULTS.sortBy;
     if (!dtoIn.order) dtoIn.order = DEFAULTS.order;
     if (!dtoIn.pageInfo) dtoIn.pageInfo = {};

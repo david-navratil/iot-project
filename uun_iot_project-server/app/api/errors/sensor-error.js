@@ -12,6 +12,13 @@ const SensorList = {
       this.message = "List records from database failed.";
     }
   },
+  InvalidDtoIn: class extends IotProjectUseCaseError {
+    constructor() {
+      super(...arguments);
+      this.code = `${SensorCreate.UC_CODE}invalidDtoIn`;
+      this.message = "DtoIn is not valid.";
+    }
+  }
 };
 
 const SensorUpdate = {
