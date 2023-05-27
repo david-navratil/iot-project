@@ -30,7 +30,6 @@
       }
     },
     "uuConfigMap": {
-      "uu_app_oidc_providers_oidcg02_uri": "https://uuapp-dev.plus4u.net/uu-oidc-maing02/eca71064ecce44b0a25ce940eb8f053d/oidc",
       "asid_license_owner_list": [
         "579-1180-4917-1"
       ],
@@ -40,8 +39,10 @@
   "uuSubAppInstance": {
     "asid": "218da2a1c7498dd9d59e834fedf91aca",
     "asidOwner": "579-1180-4917-1",
-    "awid": "5ff82ddf2d7c5fced500e905871c7221",
-    "awidOwner": "579-8255-4100-1",
+    "awidList": [{
+      "awid": "5ff82ddf2d7c5fced500e905871c7221",
+      "awidOwner": "579-8255-4100-1"  
+    }],
     "uuAppObjectStoreMap": {
       "OSID_1": {
         "osid:": "gg1aov64z3c4ukls6ryjryqebylbxq1fs"
