@@ -18,7 +18,10 @@ const alertuuSchema = {
 
 const alertCreateDtoInType = shape({
   sensorId: uu5String(512).isRequired(),
+  check: boolean(),
+  checkTime: Date(),
   status: boolean(),
+  switchTime: Date(),
 });
 
 const alertListDtoInType = shape({

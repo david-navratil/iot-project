@@ -18,6 +18,9 @@
         },
         "section": {
           "realization": "dao/SectionMongo"
+        },
+        "alertHistory": {
+          "realization": "dao/AlertHistoryMongo"
         }
       }
     }

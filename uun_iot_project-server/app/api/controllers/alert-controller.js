@@ -19,10 +19,6 @@ class AlertController {
     return AlertAbl.alertList(ucEnv.getUri().getAwid(), ucEnv.getDtoIn());
   }
 
-  alertHistory(ucEnv) {
-    return AlertAbl.alertHistory(ucEnv.getUri().getAwid(), ucEnv.getDtoIn());
-  }
-
 }
 
 module.exports = new AlertController();

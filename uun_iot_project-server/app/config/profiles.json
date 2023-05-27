@@ -80,6 +80,14 @@
       "DataCreate": {
         "sysStateList": ["active"],
         "profileList": ["Public"]
+      },
+      "AlertHistoryList": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "AlertHistoryCreate": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
       }
     }
   }

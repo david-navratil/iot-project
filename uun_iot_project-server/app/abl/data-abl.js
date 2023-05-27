@@ -4,6 +4,7 @@ const { Validator } = require("uu_appg01_server").Validation;
 const { DaoFactory } = require("uu_appg01_server").ObjectStore;
 const { ValidationHelper } = require("uu_appg01_server").AppServer;
 const AlertAbl = require("../abl/alert-abl.js");
+const AlertHistoryAbl = require("../abl/alert-history-abl.js");
 const Errors = require("../api/errors/data-error.js");
 const WARNINGS = {
 
@@ -22,6 +23,8 @@ class DataAbl {
     let alertExists = false;
     let alertChanged = false;
     let alert;
+    let date = (new Date().toISOString());
+
     try {
       alertOld = await this.daoAlert.getBySensorId(awid, dtoIn.sensorId);
       if (alertOld !== null) {
@@ -36,27 +39,46 @@ class DataAbl {
     if (alertChanged) {
       let removeObject = await this.daoAlert.getBySensorId(awid, dtoIn.sensorId);
       await this.daoAlert.remove(removeObject);
+      let checked = false;
+      if(dtoIn.status)
+      {
+        checked = false;
+      }
       let alertNew = {
         "sensorId": dtoIn.sensorId,
-        "check": alertOld.check,
+        "check": checked,
         "checkTime": alertOld.checkTime,
         "status": dtoIn.status,
-        "switchTime": Date.now(),
+        "switchTime": date,
         "awid": awid
       }
       alert = await AlertAbl.alertCreate(awid, alertNew);
+      await AlertHistoryAbl.alertHistoryCreate(awid, alertNew)
     }
-    else
+    if((!alertChanged)&&!(alertExists))
     {
       let alertNew = {
         "sensorId": dtoIn.sensorId,
         "check": false,
-        "checkTime": Date.now(),
+        "checkTime": date,
         "status": dtoIn.status,
-        "switchTime": Date.now(),
+        "switchTime": date,
         "awid": awid
       }
       alert = await AlertAbl.alertCreate(awid, alertNew);
+      await AlertHistoryAbl.alertHistoryCreate(awid, alertNew)
+    }
+    if(!(alertChanged)&&(alertExists))
+    {
+      let alertNew = {
+        "sensorId": dtoIn.sensorId,
+        "check": "false",
+        "checkTime": date,
+        "status": dtoIn.status,
+        "switchTime": date,
+        "awid": awid
+      }
+      alert = await AlertHistoryAbl.alertHistoryCreate(awid, alertNew)
     }
     return alert;
 

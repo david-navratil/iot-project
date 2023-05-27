@@ -26,11 +26,6 @@
         "httpMethod": "GET",
         "type": "UVE"
       },
-      "AlertHistory": {
-        "realization": "api/controllers/AlertController.alertHistory",
-        "httpMethod": "GET",
-        "type": "CMD"
-      },
       "AlertList": {
         "realization": "api/controllers/AlertController.alertList",
         "httpMethod": "GET",
@@ -99,6 +94,16 @@
       "SectionList": {
         "realization": "api/controllers/SectionController.sectionList",
         "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "AlertHistoryList": {
+        "realization": "api/controllers/AlertHistoryController.alertHistoryList",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "AlertHistoryCreate": {
+        "realization": "api/controllers/AlertHistoryController.alertHistoryCreate",
+        "httpMethod": "POST",
         "type": "CMD"
       }
     }
