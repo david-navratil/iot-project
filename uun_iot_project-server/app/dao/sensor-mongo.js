@@ -20,6 +20,19 @@ class SensorMongo extends UuObjectDao {
     return await super.find(filter, pageInfo, sort);
   }
 
+  async listAll() {
+    let pageInfo = {
+      "pageSize": 100,
+      "pageIndex": 0,
+    }
+
+    const sort = {
+      ["name"]: 1,
+    };
+
+    return await super.find({}, pageInfo, sort);
+  }
+
   async get(awid, id) {
     let filter = {
       awid: awid,
@@ -39,7 +52,7 @@ class SensorMongo extends UuObjectDao {
   async update(uuObject) {
     let filter = {
       awid: uuObject.awid,
-      id: uuObject.sensorid,
+      id: uuObject.id,
     };
     return await super.findOneAndUpdate(filter, uuObject, "NONE");
   }
