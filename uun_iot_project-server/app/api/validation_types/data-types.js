@@ -1,6 +1,6 @@
 const dataCreateDtoInType = shape({
-    id: id().isRequired(),
-    data: binary().isRequired()
+    nodeId: string().isRequired(),
+    status: boolean().isRequired()
   });
 
 const dataListDtoInType = shape ({

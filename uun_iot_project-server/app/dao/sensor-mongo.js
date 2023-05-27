@@ -28,6 +28,14 @@ class SensorMongo extends UuObjectDao {
     return await super.findOne(filter);
   }
 
+  async getByNodeId(awid, nodeId) {
+    let filter = {
+      awid: awid,
+      nodeId: nodeId,
+    };
+    return await super.findOne(filter);
+  }
+
   async update(uuObject) {
     let filter = {
       awid: uuObject.awid,

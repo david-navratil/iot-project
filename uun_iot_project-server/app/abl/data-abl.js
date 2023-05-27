@@ -16,6 +16,7 @@ class DataAbl {
     this.validator = Validator.load();
     this.dao = DaoFactory.getDao("data");
     this.daoAlert = DaoFactory.getDao("alert");
+    this.daoSensor = DaoFactory.getDao("sensor");
   }
 
   async dataCreate(awid, dtoIn) {
@@ -24,9 +25,18 @@ class DataAbl {
     let alertChanged = false;
     let alert;
     let date = (new Date().toISOString());
+    let sensor = await this.daoSensor.getByNodeId(awid, dtoIn.nodeId);
+    if (sensor === null) {  
+      let tmp = {
+        "awid": awid,
+        "nodeId": dtoIn.nodeId,
+        "name": ""
+      }
+      sensor = await this.daoSensor.create(tmp);
+    }    
 
     try {
-      alertOld = await this.daoAlert.getBySensorId(awid, dtoIn.sensorId);
+      alertOld = await this.daoAlert.getBySensorId(awid, sensor.id.toString());
       if (alertOld !== null) {
         alertExists = true;
         alertChanged = alertOld.status != dtoIn.status ? true : false;
