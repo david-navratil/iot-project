@@ -53,7 +53,7 @@ class DataAbl {
       }
     }
     if (alertChanged) {
-      let removeObject = await this.daoAlert.getBySensorId(awid, dtoIn.sensorId);
+      let removeObject = await this.daoAlert.getBySensorId(awid, sensor.id.toString());
       await this.daoAlert.remove(removeObject);
       let checked = false;
       if(dtoIn.status)
@@ -61,7 +61,7 @@ class DataAbl {
         checked = false;
       }
       let alertNew = {
-        "sensorId": dtoIn.sensorId,
+        "sensorId": sensor.id.toString(),
         "check": checked,
         "checkTime": alertOld.checkTime,
         "status": dtoIn.status,
