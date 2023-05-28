@@ -13,6 +13,8 @@ import { format } from "date-fns";
 import styled from "styled-components";
 import { Icon, IconButton } from "@mui/material";
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import { CheckCircle, TimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -110,6 +112,22 @@ const Sensor = createVisualComponent({
         </IconButton>
       </IconButtonWrapper>
       </TextWithIcon>
+      <TextWithIcon>
+    {sensor.alive ? 
+      <span style={{ color: "green" }}>
+        <FontAwesomeIcon icon={CheckCircle} /> Alive
+      </span> 
+      : 
+      <span style={{ color: "red" }}>
+        <FontAwesomeIcon icon={TimesCircle} /> Offline
+      </span>
+    }   
+  </TextWithIcon>
+  <TextWithIcon>
+    <span style={{ margin: "5px" }}>
+      Last Alive: {new Date(sensor.lastAlive).toLocaleString()} 
+    </span>       
+  </TextWithIcon>
     </GridItem>
     )
     //@@viewOff:render
