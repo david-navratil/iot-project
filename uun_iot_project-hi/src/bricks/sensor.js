@@ -12,6 +12,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { format } from "date-fns";
 import styled from "styled-components";
 import { Icon, IconButton } from "@mui/material";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -38,6 +39,7 @@ const Sensor = createVisualComponent({
     sensor: PropTypes.object.isRequired,
     handleUpdateSensor: PropTypes.func.isRequired,
     handleDeleteSensor: PropTypes.func.isRequired,
+    handleAlert: PropTypes.func.isRequired,
     sectionId: PropTypes.string.isRequired,
   },
   //@@viewOff:propTypes
@@ -95,12 +97,17 @@ const Sensor = createVisualComponent({
       <StatusText isFlooded={sensor.isFlooded}>
         <WaterIcon />
         <span style={{ margin: "5px", fontSize:"1rm" }}>{sensor.isFlooded ? "Flooded" : "Normal"}</span>
+        {sensor.isFlooded ?(<IconButtonWrapper>
+        <IconButton onClick={() => handleAlert(sensor.id)}>
+          <ReportProblemIcon />
+        </IconButton>
+      </IconButtonWrapper>):<></>}
       </StatusText>
       <TextWithIcon>
         <PlaceIcon />
         <span style={{ margin: "5px" }}>{sensor.name}</span>       
         <IconButtonWrapper>
-        <IconButton onClick={() => handleUpdateSensor(sectionId, sensor.id, { ...sensor, isFlooded: true })}>
+        <IconButton onClick={() => handleUpdateSensor(sensor.id)}>
           <EditIcon />
         </IconButton>
       </IconButtonWrapper>

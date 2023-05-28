@@ -33,7 +33,8 @@ const Section = createVisualComponent({
     section: PropTypes.object.isRequired,
     handleUpdateSensor: PropTypes.func.isRequired,
     handleDeleteSection: PropTypes.func.isRequired,
-    handleUpdateSection: PropTypes.func.isRequired
+    handleUpdateSection: PropTypes.func.isRequired,
+    handleAlert: PropTypes.func.isRequired
   },
   //@@viewOff:propTypes
 
@@ -43,7 +44,7 @@ const Section = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const { children, section, handleUpdateSensor } = props;
+    const { children, section, handleUpdateSensor, handleAlert } = props;
     const [modalOpen, setModalOpen] = useState(false);
     const [modalEditOpen, setModalEditOpen] = useState(false);
     const TextWithIcon = styled.div`
@@ -73,12 +74,12 @@ const Section = createVisualComponent({
           headerType="heading"
           level={2}
           borderRadius="expressive"
-          colorScheme="positive"
+          colorScheme={section.isFlooded ? "negative" : "positive"}
           significance="distinct"
           actionList={[
             {
               icon: "mdi-pencil",
-              onClick: () => handleUpdateSection(section.id),
+              onClick: () => props.handleUpdateSection(section.id),
               borderRadius: "full",
             },
             {
@@ -89,13 +90,14 @@ const Section = createVisualComponent({
           ]}
           >
           <ConfirmationModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={() => props.handleDeleteSection(section.id)} />
-          <Grid justifyItems="start" templateColumns={{xs: "repeat(auto-fit, minmax(200px, 1fr))"}}>
+          <Grid justifyItems="start" templateColumns={{xs: "repeat(auto-fit, minmax(300px, 2fr))"}}>
             {section.sensors.map((sensor) => (
               <Sensor
                 key={sensor.id}
                 sensor={sensor}
                 sectionId={section.id}
                 handleUpdateSensor={handleUpdateSensor}
+                handleAlert={handleAlert}
               />
             ))}
           </Grid>

@@ -154,3 +154,50 @@ export const deleteSection = async (sectionId) => {
   }
 }
 
+
+export const alertCheck = async (alertId) => {
+  if (session && session.isAuthenticated()) {
+    let token = session.getCallToken();
+    let url = "http://localhost:8080/uun-iot-project/22222222222222222222222222222222/AlertCheck";
+    let headers = {
+      "Authorization": `Bearer ${token.token}`,
+      "Content-Type": "application/json"
+    };
+
+    let data = {
+      id: alertId
+    };
+
+    let response = await axios.post(url, data, {
+      headers: headers
+    });
+
+    return response.data;
+  } else {
+    throw new Error("No authenticated session found");
+  }
+}
+
+
+export const alertreset = async (alertId) => {
+  if (session && session.isAuthenticated()) {
+    let token = session.getCallToken();
+    let url = "http://localhost:8080/uun-iot-project/22222222222222222222222222222222/AlertReset";
+    let headers = {
+      "Authorization": `Bearer ${token.token}`,
+      "Content-Type": "application/json"
+    };
+
+    let data = {
+      id: alertId
+    };
+
+    let response = await axios.post(url, data, {
+      headers: headers
+    });
+
+    return response.data;
+  } else {
+    throw new Error("No authenticated session found");
+  }
+}

@@ -5,7 +5,7 @@ import Config from "./config/config.js";
 import { UuDate } from "uu_i18ng01";
 
 
-const ConfirmationModal = createVisualComponent({
+const AlertModal = createVisualComponent({
   // define component details here...
 
   propTypes: {
@@ -23,7 +23,7 @@ const ConfirmationModal = createVisualComponent({
               <Uu5Elements.Modal
                 {...props}
                 header="Confirmation"
-                info="Are you sure?"
+                info="Confirm that you saw the alert."
                 footer={
                   <Uu5Elements.Grid
                     templateColumns={{ xs: "repeat(2, 1fr)", s: "repeat(2, auto)" }}
@@ -34,6 +34,7 @@ const ConfirmationModal = createVisualComponent({
                     <Button onClick={props.onSubmit} significance="highlighted" colorScheme="negative">Confirm</Button>
                   </Uu5Elements.Grid>
                 }
+                children="A sensor dedected water. Please investigate."
               >
                
               </Uu5Elements.Modal>
@@ -42,5 +43,5 @@ const ConfirmationModal = createVisualComponent({
     );
   },
 });
-export { ConfirmationModal };
-export default ConfirmationModal;
+export { AlertModal };
+export default AlertModal;

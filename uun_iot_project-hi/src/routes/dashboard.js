@@ -35,10 +35,12 @@ import importLsi from "../lsi/import-lsi.js";
 import { format } from "date-fns";
 import Section from "../bricks/section.js";
 import { PieChart, Pie, Tooltip, Legend, Cell, ResponsiveContainer } from 'recharts';
-import { getSections, getSensors, getAlerts, createSection, deleteSection, updateSection } from '../services/api';
+import { getSections, getSensors, getAlerts, createSection, deleteSection, updateSection, alertCheck } from '../services/api';
 import Uu5Forms from "uu5g05-forms";
 import SectionAddModal from "../bricks/sectionAddModal.js";
 import SectionEditModal from "../bricks/sectionEditModal.js";
+import SensorEditModal from "../bricks/sensorEditModal.js";
+import AlertModal from "../bricks/alertModal.js";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -85,10 +87,10 @@ let Dashboard = createVisualComponent({
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalUpdateSectionOpen, setModalUpdateSectionOpen] = useState(false);
-    const [sectionUpdateId, setSectionUpdateId] = useState("");
+    const [sectionUpdateId, setSectionUpdateId] = useState(null);
     const [alertModalOpen, setAlertModalOpen] = useState(false);
     const [selectedAlert, setSelectedAlert] = useState(null);
-    const [selectedSensor, setSelectedSensor] = useState(null);
+    const [selectedSensorId, setSelectedSensor] = useState(null);
     const [sections, setSections] = useState([]);
     const [sensors, setSensors] = useState([]);
     const [unassignedSensors, setUnassignedSensors] = useState([]);
@@ -111,9 +113,9 @@ let Dashboard = createVisualComponent({
       setSectionUpdateId(sectionId);
       setModalUpdateSectionOpen(true);
       // Find the section that needs to be updated
-      const sectionToUpdate = sections.find(section => section.name === sectionName);
+      const sectionToUpdate = sections.find(section => section.name === sectionId);
       if (!sectionToUpdate) {
-        console.error(`Section with name ${sectionName} not found.`);
+        console.error(`Section with name ${sectionId} not found.`);
         return;
       }
 
@@ -123,33 +125,66 @@ let Dashboard = createVisualComponent({
       // Update the sections state with the new data
       setSections([...sections]);
     };
-    const handleUpdatedSection = async (sectionId) => {
+    const handleUpdatedSection = async (updatedSectionName, updatedSectionSensorIds) => {
+      const updatedSectionSensors = sensors.filter(sensor => updatedSectionSensorIds.includes(sensor.id));
 
-      const sectionToUpdate = sections.find(section => section.name === sectionName);
-      if (!sectionToUpdate) {
-        console.error(`Section with name ${sectionName} not found.`);
-        return;
-      }
+      // Ensure the updated sensors are not in any other section
+      const updatedSections = sections.map(section => {
+        if (section.id === sectionUpdateId) {
+          section.name = updatedSectionName;
+          section.sensors = updatedSectionSensors;
+          section.sensorIds = updatedSectionSensorIds;
+        } else {
+          section.sensors = section.sensors.filter(sensor => !updatedSectionSensorIds.includes(sensor.id));
+          if (section.name != "Unassigned") { section.sensorIds = section.sensorIds.filter(sensor => !updatedSectionSensorIds.includes(sensor.id)); }
+        }
+        console.log("section");
+        console.log(section);
+        if (section.name != "Unassigned") { updateSection(section.id, section.name, section.sensorIds); }
+        return section;
+      });
 
-      // Replace the sensors in this section
-      sectionToUpdate.sensors = newSensors;
+      // Update the sections state
+      setSections(updatedSections);
 
-      // Update the sections state with the new data
-      setSections([...sections]);
+      setModalUpdateSectionOpen(false);
     };
 
-    const handleUpdateSensor = (sectionId, sensorId, sensorData) => {
+
+    const handleUpdateSensor = (sensorId) => {
       setUpdateModalOpen(true);
-      setSelectedSensor({ sectionId, sensorId, sensorData });
+      setSelectedSensor(sensorId);
     };
+    const handleUpdatedSensor = (sensorId, updatedSensorData) => {
+      // Assume that updatedSensorData has the structure { name: newSensorName }
+      // Find the sensor that needs to be updated
+      const sensorToUpdate = sensors.find(sensor => sensor.id === sensorId);
+      if (!sensorToUpdate) {
+        console.error(`Sensor with id ${sensorId} not found.`);
+        return;
+      }
+
+      // Update the name of the sensor
+      sensorToUpdate.name = updatedSensorData;
+
+      // Now update the sensors in the sections
+      const updatedSections = sections.map(section => {
+        section.sensors = section.sensors.map(sensor => sensor.id === sensorId ? sensorToUpdate : sensor);
+        return section;
+      });
+
+      // Update the sections state with the new data
+      setSections(updatedSections);
+    };
+
     const handleCreateSection = (newSectionName, newSectionSensorIds) => {
       // Assumes newSectionSensors is an array of sensor objects to add to the new section
       const newSectionSensors = sensors.filter(sensor => newSectionSensorIds.includes(sensor.id));
       // Ensure the new sensors are not in any other section
       const updatedSections = sections.map(section => {
         section.sensors = section.sensors.filter(sensor => !newSectionSensorIds.some(newSensor => newSensor === sensor.id));
-        if (section.name != "Unassigned") {section.sensorIds = section.sensorIds.filter(sensor => !newSectionSensorIds.some(newSensor => newSensor === sensor));}
-        if (section.name != "Unassigned") {updateSection(section.id, section.name, section.sensorIds);}
+        if (section.name != "Unassigned") { section.sensorIds = section.sensorIds.filter(sensor => !newSectionSensorIds.some(newSensor => newSensor === sensor)); }
+        if (section.name != "Unassigned") { updateSection(section.id, section.name, section.sensorIds); }
         return section;
       });
 
@@ -173,9 +208,17 @@ let Dashboard = createVisualComponent({
       const updatedSections = sections.filter(section => section.id !== sectionId);
       setSections(updatedSections);
     };
+    const handleConfirmAlert = async (alertId) => {
+      alertCheck(alertId);
+      setAlertModalOpen(false);
+    };
+    const handleAlert = async (sensorid) => {
+      alertCheck(alertId);
+      setAlertModalOpen(false);
+    };
     const handleOpenAlertModal = (alert) => {
       setSelectedAlert(alert);
-      setAlertModalOpen(true);
+      
     };
 
 
@@ -200,16 +243,25 @@ let Dashboard = createVisualComponent({
 
           const updatedSections = sectionData.itemList.map(section => {
             const sectionSensors = updatedSensors.filter(sensor => section.sensorIds.includes(sensor.id));
-            return { ...section, sensors: sectionSensors };
+
+            const isFlooded = sectionSensors.some(sensor => sensor.isFlooded);
+            return { ...section, sensors: sectionSensors, isFlooded };
           });
+
           const unassignedSensors = updatedSensors.filter(sensor => !updatedSections.flatMap(section => section.sensorIds).includes(sensor.id));
           const unassignedSection = {
             id: Utils.String.generateId(),
             name: "Unassigned",
             sensors: unassignedSensors,
           };
+          const unconfirmedAlert = alertsData.itemList.find(alert => alert.check === false);
+          if (unconfirmedAlert) {
+            setSelectedAlert(unconfirmedAlert.id);
+            setAlertModalOpen(true);
+          }
           updatedSections.push(unassignedSection);
-          setSections(updatedSections);
+          const sortedSections = updatedSections.sort((a, b) => b.isFlooded - a.isFlooded);
+          setSections(sortedSections);
           setSensors(updatedSensors);
           setAlerts(alertsData.itemList);
 
@@ -242,7 +294,7 @@ let Dashboard = createVisualComponent({
     return (
       <div>
         <RouteBar />
-        <h1></h1>
+      
         <div style={{ paddingLeft: "2%", paddingRight: "2%" }}>
           <Grid container spacing={2} templateColumns={{ xs: "100%", m: "50% 50%" }}>
             <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -299,10 +351,10 @@ let Dashboard = createVisualComponent({
                   <Card>
                     <CardContent>
                       <Typography variant="body2" component="div">
-                        Total Flooded Sensors:
+                        Flooded Sensors:
                       </Typography>
                       <Typography variant="h5" color="text.secondary">
-                        {totalFlooded}
+                        {((totalFlooded / totalSensors) * 100).toFixed(0) + "%"}
                       </Typography>
                     </CardContent>
                   </Card>
@@ -311,10 +363,10 @@ let Dashboard = createVisualComponent({
                   <Card>
                     <CardContent>
                       <Typography variant="body2" component="div">
-                        Total Not Flooded Sensors:
+                        Not Flooded Sensors:
                       </Typography>
                       <Typography variant="h5" color="text.secondary">
-                        {nonFlooded}
+                        {((nonFlooded / totalSensors) * 100).toFixed(0) + "%"}
                       </Typography>
                     </CardContent>
                   </Card>
@@ -342,7 +394,9 @@ let Dashboard = createVisualComponent({
             ]}
           >
             <SectionAddModal currentSensors={[{ value: "" }]} sections={sections} open={modalOpen} onClose={() => setModalOpen(false)} onUpdate={handleCreateSection} />
-            <SectionEditModal open={modalUpdateSectionOpen} sectionId={sectionUpdateId} sections={sections} onClose={() => setModalUpdateSectionOpen(false)} onUpdate={handleUpdatedSection}/>
+            <SectionEditModal open={modalUpdateSectionOpen} sectionId={sectionUpdateId} sections={sections} onClose={() => setModalUpdateSectionOpen(false)} onUpdate={handleUpdatedSection} />
+            <SensorEditModal open={updateModalOpen} sensorId={selectedSensorId} allSensors={sensors} onClose={() => setUpdateModalOpen(false)} onUpdate={handleUpdatedSensor} />
+            <AlertModal open={alertModalOpen} onClose={() => setModalOpen(false)} onSubmit={() => handleConfirmAlert(selectedAlert)} />
             <Grid container spacing={2} templateColumns={{ xs: "repeat(auto-fit, minmax(45%, 49%))" }}>
               {sections.map((section) => (
                 <Section
@@ -351,6 +405,7 @@ let Dashboard = createVisualComponent({
                   handleUpdateSensor={handleUpdateSensor}
                   handleDeleteSection={handleDeleteSection}
                   handleUpdateSection={handleUpdateSection}
+                  handleAlert={handleAlert}
                 />
               ))}
             </Grid>
