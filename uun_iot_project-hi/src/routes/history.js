@@ -1,4 +1,12 @@
 //@@viewOn:imports
+import styled from "styled-components";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { Icon, IconButton, Card, CardContent, Typography } from "@mui/material";
+import WaterIcon from "@mui/icons-material/Water";
+import PlaceIcon from "@mui/icons-material/Place";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import {
   Utils,
   createVisualComponent,
@@ -8,17 +16,33 @@ import {
   useSession,
   useDynamicLibraryComponent,
   useState,
-  useEffect
+  useEffect,
+  TextField,
+  Alert,
+  RichIcon,
 } from "uu5g05";
-import Uu5Elements from "uu5g05-elements";
+import UU5 from "uu5g04";
+import "uu5g04-bricks";
+import "uu5g04-forms";
+import Uu5Elements, { Button, Modal, Box, Line, Text, DateTime, Grid, Block } from "uu5g05-elements";
 import { useSubApp, useSystemData } from "uu_plus4u5g02";
 import Plus4U5App, { withRoute } from "uu_plus4u5g02-app";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-
 import Config from "./config/config.js";
 import AboutCfg from "../config/about.js";
 import RouteBar from "../core/route-bar.js";
 import importLsi from "../lsi/import-lsi.js";
+import { format } from "date-fns";
+import Section from "../bricks/section.js";
+import { PieChart, Pie, Tooltip, Legend, Cell, ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Area } from 'recharts';
+import { getSections, getSensors, getAlerts, createSection, deleteSection, updateSection, alertCheck } from '../services/api';
+import Uu5Forms from "uu5g05-forms";
+import SectionAddModal from "../bricks/sectionAddModal.js";
+import SectionEditModal from "../bricks/sectionEditModal.js";
+import SensorEditModal from "../bricks/sensorEditModal.js";
+import AlertModal from "../bricks/alertModal.js";
+import { parseISO } from 'date-fns'; // to format the dates
+import _ from 'lodash'; // for grouping and counting data
+import { getAlertHistory} from "../services/api";
 //import HistoryBox from "../bricks/history-box.js";
 //@@viewOff:imports
 
@@ -83,7 +107,7 @@ const Css = {
 //@@viewOn:helpers
 //@@viewOff:helpers
 
-  let History = createVisualComponent({
+let History = createVisualComponent({
   //@@viewOn:statics
   uu5Tag: Config.TAG + "History",
   //@@viewOff:statics
@@ -98,56 +122,110 @@ const Css = {
 
   render(props) {
     //@@viewOn:private
-    function createMockData() {
-      const sensorIds = [1234, 1235, 1236, 1237]; // Add as many sensor IDs as needed
-      const startDate = new Date("2023-01-01T00:00:00");
-      const endDate = new Date("2023-12-31T23:59:59");
-    
-      let data = [];
-    
-      for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
-        let entry = { time: new Date(d) };
-        
-        sensorIds.forEach(id => {
-          entry[`sensor${id}`] = Math.round(Math.random()); // Randomly assign a flooded state (0 or 1)
-        });
-    
-        data.push(entry);
-      }
-    
-      return data;
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+      async function fetchData() {
+        const response = await getAlertHistory();
+        const sensorsResponse = await getSensors();
+        let groupedData = _.groupBy(response.itemList, item => format(new Date(item.checkTime), 'yyyy-MM-dd'));
+        let processedData = _.map(groupedData, (values, key) => ({
+          time: key,
+          count: _.filter(values, 'status').length
+        }));
+
+        let mostFloodedSensorGroup = _.maxBy(_.values(groupedData), 'length');
+    let mostFloodedSensorId = mostFloodedSensorGroup ? mostFloodedSensorGroup[0].sensorId : null;
+    let mostFloodedSensor = null;
+    if (mostFloodedSensorId) {
+      const sensor = sensorsResponse.itemList.find(sensor => sensor.id === mostFloodedSensorId); // find the sensor from the list
+      mostFloodedSensor = sensor ? sensor.name : null; // if sensor is found, get the name
     }
-    
+
+    setData({
+      chartData: processedData,
+      totalAlerts: response.itemList.length,
+      mostFloodedSensor: mostFloodedSensor
+    });
+      }
+
+      fetchData();
+    }, []);
+
     // Then, you can use this function to create your mock data:
-    const data = createMockData();
     //@@viewOff:private
 
     //@@viewOn:interface
+    const { chartData, totalAlerts, mostFloodedSensor } = data;
     //@@viewOff:interface
 
     //@@viewOn:render
-    
+
     const attrs = Utils.VisualComponent.getAttrs(props);
     return (
-      <div {...attrs}>
+      <div style={{ paddingLeft: "2%", paddingRight: "2%" }}>
         <RouteBar />
         <UU5.Bricks.Container>
-        <AreaChart
-        width={500}
-        height={400}
-        data={data}
-        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="time" />
-        <YAxis />
-        <Tooltip />
-        {/* Map each sensor to an Area in the chart */}
-        {Object.keys(data[0] || {}).filter(key => key !== 'time').map(sensor => (
-          <Area type="monotone" dataKey={sensor} stackId="1" stroke="#8884d8" fill="#8884d8" />
-        ))}
-      </AreaChart>
-    </UU5.Bricks.Container>
+
+          <Block
+            header={"Summary"}
+            card="full"
+            headerType="heading"
+            level={2}
+            //borderRadius="expressive"
+            colorScheme="positive"
+
+            significance="distinct"
+          >              
+            <Grid container spacing={2} templateColumns={{ xs: "100%", m: "50% 50%" }}>
+              <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <ResponsiveContainer width="90%" height={400}>
+              <AreaChart
+
+                data={chartData}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" tickFormatter={tick => format(parseISO(tick), 'MMM d')} />
+                <YAxis />
+                <Tooltip />
+                <Area type="monotone" dataKey="count" stackId="1" stroke="#8884d8" fill="#8884d8" />
+              </AreaChart>
+            </ResponsiveContainer>
+              </Grid.Item>
+              <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Grid container templateColumns={{ xs: "repeat(auto-fit, minmax(500, 600))" }}>
+                  <Grid.Item>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="body2" component="div">
+                          Total Alerts:
+                        </Typography>
+                        <Typography variant="h5" color="text.secondary">
+                          {totalAlerts}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid.Item>
+                  <Grid.Item>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="body2" component="div">
+                          Most flooded sensor
+                        </Typography>
+                        <Typography variant="h5" color="text.secondary">
+                          {mostFloodedSensor}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid.Item>
+                </Grid>
+              </Grid.Item>
+
+
+            </Grid>
+          </Block>
+        </UU5.Bricks.Container>
       </div>
     );
   },

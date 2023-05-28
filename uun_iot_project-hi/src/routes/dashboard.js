@@ -296,6 +296,16 @@ let Dashboard = createVisualComponent({
         <RouteBar />
       
         <div style={{ paddingLeft: "2%", paddingRight: "2%" }}>
+        <Block
+            header={"Summary"}
+            card="full"
+            headerType="heading"
+            level={2}
+            //borderRadius="expressive"
+            colorScheme="positive"
+
+            significance="distinct"
+          >
           <Grid container spacing={2} templateColumns={{ xs: "100%", m: "50% 50%" }}>
             <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ResponsiveContainer width="99%" height={400}>
@@ -322,7 +332,7 @@ let Dashboard = createVisualComponent({
               </ResponsiveContainer>
             </Grid.Item>
             <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Grid container templateColumns={{ xs: "50% 50%" }}>
+              <Grid container templateColumns={{ xs: "repeat(auto-fit, minmax(500, 600))" }}>
                 <Grid.Item>
                   <Card>
                     <CardContent>
@@ -376,6 +386,7 @@ let Dashboard = createVisualComponent({
 
 
           </Grid>
+          </Block>
           <Block
             header={"Sections"}
             card="full"

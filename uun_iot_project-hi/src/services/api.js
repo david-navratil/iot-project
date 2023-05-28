@@ -57,6 +57,23 @@ export const getAlerts = async () => {
     throw new Error("No authenticated session found");
   }
 }
+export const getAlertHistory = async () => {
+  if (session && session.isAuthenticated()) {
+    let token = session.getCallToken();
+    let url = "http://localhost:8080/uun-iot-project/22222222222222222222222222222222/AlertHistoryList";
+    let headers = {
+      "Authorization": `Bearer ${token.token}`
+    };
+
+    let response = await axios.get(url, {
+      headers: headers
+    });
+
+    return response.data;
+  } else {
+    throw new Error("No authenticated session found");
+  }
+}
 
 export const updateSensor = async (sensorid, name) => {
   if (session && session.isAuthenticated()) {

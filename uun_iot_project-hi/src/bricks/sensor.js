@@ -98,9 +98,7 @@ const Sensor = createVisualComponent({
         <WaterIcon />
         <span style={{ margin: "5px", fontSize:"1rm" }}>{sensor.isFlooded ? "Flooded" : "Normal"}</span>
         {sensor.isFlooded ?(<IconButtonWrapper>
-        <IconButton onClick={() => handleAlert(sensor.id)}>
           <ReportProblemIcon />
-        </IconButton>
       </IconButtonWrapper>):<></>}
       </StatusText>
       <TextWithIcon>
