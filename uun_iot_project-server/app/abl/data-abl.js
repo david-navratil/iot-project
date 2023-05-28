@@ -19,6 +19,13 @@ class DataAbl {
     this.daoSensor = DaoFactory.getDao("sensor");
   }
 
+  async dataCreateList(awid, dtoIn) {
+    for(let i = 0; i < dtoIn.array.length; i++)
+    {
+      await this.dataCreate(awid, dtoIn.array[i]);
+    }
+  }
+
   async dataCreate(awid, dtoIn) {
     let alertOld;
     let alertExists = false;

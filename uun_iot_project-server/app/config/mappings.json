@@ -105,6 +105,11 @@
         "realization": "api/controllers/AlertHistoryController.alertHistoryCreate",
         "httpMethod": "POST",
         "type": "CMD"
+      },
+      "DataCreateList": {
+        "realization": "api/controllers/DataController.dataCreateList",
+        "httpMethod": "POST",
+        "type": "CMD"
       }
     }
   }
