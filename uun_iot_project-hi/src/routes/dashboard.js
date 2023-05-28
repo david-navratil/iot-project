@@ -97,13 +97,16 @@ let Dashboard = createVisualComponent({
     const [totalSections, setTotalSections] = useState(0);
     const [totalSensors, setTotalSensors] = useState(0);
     const [totalFlooded, setTotalFlooded] = useState(0);
+    const [totalAlive, setTotalAlive] = useState(0);
+    const [totalOffline, setTotalOffline] = useState(0);
     const [alerts, setAlerts] = useState([]);
     const FETCH_INTERVAL = 90000;
     const nonFlooded = totalSensors - totalFlooded;
-    const COLORS = ['red', 'green'];
+    const COLORS = ['red', 'green', 'gray'];
     const pieData = [
       { name: 'Flooded', value: totalFlooded },
-      { name: 'Not Flooded', value: nonFlooded },
+      { name: 'Alive', value: totalAlive },
+      { name: 'Offline', value: totalOffline },
     ];
     const [update, setUpdate] = useState(false);
 
@@ -218,7 +221,7 @@ let Dashboard = createVisualComponent({
     };
     const handleOpenAlertModal = (alert) => {
       setSelectedAlert(alert);
-      
+
     };
 
 
@@ -271,6 +274,10 @@ let Dashboard = createVisualComponent({
           setTotalSections(updatedSections.length);
           setTotalSensors(updatedSensors.length);
           setTotalFlooded(updatedSensors.filter(sensor => sensor.isFlooded).length);
+          const totalAlive = updatedSensors.filter(sensor => sensor.alive).length;
+          const totalOffline = updatedSensors.filter(sensor => !sensor.alive).length;
+          setTotalAlive(totalAlive);
+          setTotalOffline(totalOffline);
 
         } catch (error) {
           console.error("Error:", error);
@@ -294,9 +301,9 @@ let Dashboard = createVisualComponent({
     return (
       <div>
         <RouteBar />
-      
+
         <div style={{ paddingLeft: "2%", paddingRight: "2%" }}>
-        <Block
+          <Block
             header={"Summary"}
             card="full"
             headerType="heading"
@@ -306,86 +313,86 @@ let Dashboard = createVisualComponent({
 
             significance="distinct"
           >
-          <Grid container spacing={2} templateColumns={{ xs: "100%", m: "50% 50%" }}>
-            <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <ResponsiveContainer width="99%" height={400}>
-                <PieChart>
-                  <Pie
-                    dataKey="value"
-                    isAnimationActive={false}
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius="80%"
-                    fill="#8884d8"
-                    label
-                  >
-                    {
-                      pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))
-                    }
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </Grid.Item>
-            <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Grid container templateColumns={{ xs: "repeat(auto-fit, minmax(500, 600))" }}>
-                <Grid.Item>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="body2" component="div">
-                        Total Sections:
-                      </Typography>
-                      <Typography variant="h5" color="text.secondary">
-                        {totalSections}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid.Item>
-                <Grid.Item>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="body2" component="div">
-                        Total Sensors:
-                      </Typography>
-                      <Typography variant="h5" color="text.secondary">
-                        {totalSensors}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid.Item>
-                <Grid.Item>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="body2" component="div">
-                        Flooded Sensors:
-                      </Typography>
-                      <Typography variant="h5" color="text.secondary">
-                        {((totalFlooded / totalSensors) * 100).toFixed(0) + "%"}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid.Item>
-                <Grid.Item>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="body2" component="div">
-                        Not Flooded Sensors:
-                      </Typography>
-                      <Typography variant="h5" color="text.secondary">
-                        {((nonFlooded / totalSensors) * 100).toFixed(0) + "%"}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid.Item>
-              </Grid>
-            </Grid.Item>
+            <Grid container spacing={2} templateColumns={{ xs: "100%", m: "50% 50%" }}>
+              <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <ResponsiveContainer width="99%" height={400}>
+                  <PieChart>
+                    <Pie
+                      dataKey="value"
+                      isAnimationActive={false}
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius="80%"
+                      fill="#8884d8"
+                      label
+                    >
+                      {
+                        pieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))
+                      }
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Grid.Item>
+              <Grid.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Grid container templateColumns={{ xs: "repeat(auto-fit, minmax(500, 600))" }}>
+                  <Grid.Item>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="body2" component="div">
+                          Total Sections:
+                        </Typography>
+                        <Typography variant="h5" color="text.secondary">
+                          {totalSections}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid.Item>
+                  <Grid.Item>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="body2" component="div">
+                          Total Sensors:
+                        </Typography>
+                        <Typography variant="h5" color="text.secondary">
+                          {totalSensors}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid.Item>
+                  <Grid.Item>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="body2" component="div">
+                          Flooded Sensors:
+                        </Typography>
+                        <Typography variant="h5" color="text.secondary">
+                          {((totalFlooded / totalSensors) * 100).toFixed(0) + "%"}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid.Item>
+                  <Grid.Item>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="body2" component="div">
+                          Not Flooded Sensors:
+                        </Typography>
+                        <Typography variant="h5" color="text.secondary">
+                          {((nonFlooded / totalSensors) * 100).toFixed(0) + "%"}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid.Item>
+                </Grid>
+              </Grid.Item>
 
 
-          </Grid>
+            </Grid>
           </Block>
           <Block
             header={"Sections"}
