@@ -52,7 +52,7 @@ class SensorMongo extends UuObjectDao {
   async update(uuObject) {
     let filter = {
       awid: uuObject.awid,
-      id: uuObject.sensorid,
+      id: uuObject.id,
     };
     return await super.findOneAndUpdate(filter, uuObject, "NONE");
   }
