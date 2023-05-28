@@ -2,7 +2,7 @@ const dataCreateDtoInType = shape({
     nodeId: string().isRequired(),
     status: boolean().isRequired()
   });
-
+  
 const dataListDtoInType = shape ({
     dataid: id().isRequired(),
     sensorConnection: boolean().isRequired(),

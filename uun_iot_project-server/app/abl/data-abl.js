@@ -19,6 +19,13 @@ class DataAbl {
     this.daoSensor = DaoFactory.getDao("sensor");
   }
 
+  async dataCreateList(awid, dtoIn) {
+    for(let i = 0; i < dtoIn.array.length; i++)
+    {
+      await this.dataCreate(awid, dtoIn.array[i]);
+    }
+  }
+
   async dataCreate(awid, dtoIn) {
     let alertOld;
     let alertExists = false;
@@ -53,7 +60,7 @@ class DataAbl {
       }
     }
     if (alertChanged) {
-      let removeObject = await this.daoAlert.getBySensorId(awid, dtoIn.sensorId);
+      let removeObject = await this.daoAlert.getBySensorId(awid, sensor.id.toString());
       await this.daoAlert.remove(removeObject);
       let checked = false;
       if(dtoIn.status)
@@ -61,7 +68,7 @@ class DataAbl {
         checked = false;
       }
       let alertNew = {
-        "sensorId": dtoIn.sensorId,
+        "sensorId": sensor.id.toString(),
         "check": checked,
         "checkTime": alertOld.checkTime,
         "status": dtoIn.status,

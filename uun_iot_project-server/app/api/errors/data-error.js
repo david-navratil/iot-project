@@ -13,7 +13,13 @@ const DataCreate = {
   
 };
 
+const DataCreateList = {
+  UC_CODE: `${DATA_ERROR_PREFIX}dataCreateList/`,
+  
+};
+
 module.exports = {
+  DataCreateList,
   DataCreate,
   DataList
 };
